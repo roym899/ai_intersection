@@ -1,5 +1,4 @@
-*.o
+*.out
 .floo
-*.o
 .flooignore
 *.swp
