@@ -1,0 +1,5 @@
+*.o
+.floo
+*.o
+.flooignore
+*.swp
