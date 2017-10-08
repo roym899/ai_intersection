@@ -1,9 +1,27 @@
 #include "qintersectionwidget.h"
 
-QIntersectionWidget::QIntersectionWidget(QWidget *parent) : QWidget(parent)
-{
-    // TODO: update timer
+#include <iostream>
+#include <sstream>
 
+QIntersectionWidget::QIntersectionWidget(QWidget *parent) : QWidget(parent), timer_interval(33), current_sim_time(0)
+{
+    // read in as much as possible
+    std::string input_line;
+    while(std::getline(std::cin, input_line)) {
+        std::istringstream line_stream(input_line);
+        std::string token;
+        int count = 0;
+        double time_stamp;
+        line_stream >> unscaled_lane_length >> time_stamp;
+        sim_strings.push(std::make_pair(line_stream.str(), time_stamp));
+    }
+
+    update_timer = new QTimer(this);
+    connect(update_timer, SIGNAL(timeout()), this, SLOT(update()));
+    update_timer->start(timer_interval);
+
+    for(int i=0; i<sizeof(fields); ++i)
+        fields[i] = false;
 }
 
 void QIntersectionWidget::paintEvent(QPaintEvent *event)
@@ -12,13 +30,73 @@ void QIntersectionWidget::paintEvent(QPaintEvent *event)
     const double scale_factor = 10;
 
     const double lane_width = 3.0 * scale_factor;
-    const double lane_length = 50.0 * scale_factor;
+    const double lane_length = unscaled_lane_length * scale_factor;
     const double margin = 2.0 * scale_factor;
     const double total_dimensions = 2*lane_width+2*lane_length+2*margin;
     const double car_width = 1.8 * scale_factor;
     const double car_length = 4 * scale_factor;
     const double line_thickness = 0.25 *scale_factor;
     const double corner_radius = 0.3 * scale_factor;
+
+    current_sim_time += timer_interval/1000;
+    std::cout << current_sim_time << std::endl;
+
+
+    // search for most up-to-date element in queue
+    while(sim_strings.size() != 0 && sim_strings.front().second < current_sim_time) {
+        std::cout << "remove from queue" << std::endl;
+        n_cars.clear();
+        s_cars.clear();
+        e_cars.clear();
+        w_cars.clear();
+        std::istringstream string_stream(sim_strings.front().first);
+        sim_strings.pop();
+        std::string token;
+        string_stream >> token;
+        string_stream >> token;
+        int count =  0;
+        char current_lane;
+        while(string_stream >> token) {
+            if(count < 4) {
+                if(token ==  "0")
+                    fields[count] = false;
+                else
+                    fields[count] = true;
+
+                ++count;
+            }
+            else {
+                if(token == "N")
+                    current_lane = 'N';
+                else if(token == "E")
+                    current_lane = 'E';
+                else if(token == "W")
+                    current_lane = 'W';
+                else if(token == "S")
+                    current_lane = 'S';
+                else {
+                    if(std::stod(token) > 0) {
+                        switch(current_lane) {
+                        case 'N':
+                            n_cars.push_back(std::stod(token)*scale_factor);
+                            break;
+                        case 'S':
+                            s_cars.push_back(std::stod(token)*scale_factor);
+                            break;
+                        case 'E':
+                            e_cars.push_back(std::stod(token)*scale_factor);
+                            break;
+                        case 'W':
+                            w_cars.push_back(std::stod(token)*scale_factor);
+                            break;
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     // define the colors for the intersection
     QColor green(15, 140, 15);
@@ -53,19 +131,6 @@ void QIntersectionWidget::paintEvent(QPaintEvent *event)
     painter.drawLine(street_line_w_1);
     painter.drawLine(street_line_w_2);
 
-    // TODO: replace with member variables
-    std::vector<double> n_cars;
-    n_cars.push_back(0.0*10);
-    n_cars.push_back(20.0*10);
-    std::vector<double> s_cars;
-    s_cars.push_back(10.0*10);
-    s_cars.push_back(15.0*10);
-    std::vector<double> e_cars;
-    e_cars.push_back(15.0*10);
-    e_cars.push_back(35.0*10);
-    std::vector<double> w_cars;
-    w_cars.push_back(5.0*10);
-    w_cars.push_back(15.0*10);
 
     painter.setPen(QPen(green, 0));
     painter.setBrush(green);
@@ -87,8 +152,6 @@ void QIntersectionWidget::paintEvent(QPaintEvent *event)
         painter.drawRoundedRect(car_rect, corner_radius, corner_radius);
     }
 
-    // TODO: replace fields by member variable
-    bool fields[] = {true, false, true, false};
     painter.setPen(QPen(green, 0));
     painter.setBrush(green);
 
