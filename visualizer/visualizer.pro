@@ -25,10 +25,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    qintersectionwidget.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    qintersectionwidget.h
 
 FORMS += \
         mainwindow.ui
