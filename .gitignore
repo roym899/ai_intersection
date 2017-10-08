@@ -2,3 +2,5 @@
 .floo
 .flooignore
 *.swp
+*.user
+build-*
