@@ -51,6 +51,7 @@ double Intersection::sim_step(double time_step) {
 
 	// update the timestamp
 	timestamp += time_step;
+	return timestamp;
 }
 
 void Intersection::update_fields() {
@@ -63,16 +64,16 @@ void Intersection::update_fields() {
 	for(std::vector<Car>::iterator it=cars.begin(); it != cars.end();) {
 		if(it->current_distance <= 0) { // it->is on intersection
 			bool remove=false;
-			int idx;
+			int idx=-1;
 			if(it->current_field_time / field_time <= 1.0) {
 				if(it->lane == 'N')
 					idx = 0;
 				else if(it->lane == 'E')
 					idx = 1;
 				else if(it->lane == 'S')
-					idx = 2;
-				else if(it->lane == 'W')
 					idx = 3;
+				else if(it->lane == 'W')
+					idx = 2;
 			}
 			else if(it->current_field_time / field_time <= 2.0) {
 				if(it->lane == 'N' && it->goal == 'W')
@@ -110,23 +111,33 @@ void Intersection::update_fields() {
 				else if(it->lane == 'W')
 					idx = 1;
 			}
+			else {
+				remove = true;
+			}
 
 			if (remove) {
 				it = cars.erase(it);
+
 			}
 			else {
+				if(idx == -1)
+					std::cerr << "Error: idx has not been set" << std::endl;
 				if(fields[idx])
-					std::cout << "Error: field is already occupied!!" << std::endl;
+					std::cerr << "Error: field is already occupied!!" << std::endl;
 				else
 					fields[idx] = true;
+				++it;
 			}
 		}
+		else
+			++it;
 	}	
 }
 
 std::ostream& operator<< (std::ostream& stream, const Intersection& intersection) {
 	// intersection variables
 	stream << intersection.lane_length << " " << intersection.timestamp << " ";
+
 
 	// current intersection state
 	for(int i=0; i<sizeof(intersection.fields); ++i)  {
