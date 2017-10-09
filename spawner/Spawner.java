@@ -8,7 +8,14 @@ import java.util.*;
  */
 public class Spawner {
 
-
+    /**
+     * Runs a spawner to generate random cars at random timestamps.
+     *
+     * TODO: Choice must not be the same lane that a car comes from.
+     *
+     * @param args
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
 
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
@@ -34,6 +41,7 @@ public class Spawner {
         System.out.print(initVelocity + " ");
         System.out.print(maxVelocity + " ");
         System.out.print(maxAcceleration + " ");
+        System.out.print(laneLength + " ");
         System.out.print(timestep + " ");
 
         // TODO: Remove
@@ -56,7 +64,6 @@ public class Spawner {
 
         // The last cars in the lane with their corresponding timestamps
         Map<Direction, Car> laneCars = new EnumMap<>(Direction.class);
-        Map<Direction, Integer> laneSteps = new EnumMap<>(Direction.class);
 
         for (int step = 0; step * timestep < totalTime; ++step) {
 
@@ -69,35 +76,26 @@ public class Spawner {
              *
              */
 
+            // Initial values for lane
             int laneIdx = rng.nextInt(4);
             Direction lane = Direction.values()[laneIdx];
-
-            // If no car in lane
-            if (!laneCars.containsKey(lane)) {
-                Direction choice = Direction.values()[rng.nextInt(4)];
-                Car car = new Car(step * timestep, lane, choice);
-
-                print(car);
-                laneCars.put(lane, car);
-                laneSteps.put(lane, step);
-                continue;
-            }
-
-            /* Else check the lane and switch 4 times. If nothing is found, exit the program */
 
             int count;
             for (count = 0; count < 4; ++count) {
 
-                lane = Direction.values()[laneIdx];
+                // If no car in lane
+                if (!laneCars.containsKey(lane))
+                    break;
 
-                double timePassed = (step - laneSteps.get(lane)) * timestep;
+                double timePassed = step * timestep - laneCars.get(lane).timestamp();
                 double distAhead = initVelocity * timePassed;
 
-                // If the lane is valid break, else switch lane
+                // If the car before is far enough, lane is valid
                 if (distAhead > Car.LENGTH)
                     break;
-                else
-                    laneIdx = (laneIdx + 1) % 4;
+
+                laneIdx = (laneIdx + 1) % 4;
+                lane = Direction.values()[laneIdx];
             }
 
             // Lane was not found
@@ -111,12 +109,13 @@ public class Spawner {
              *
              */
 
-            Direction choice = Direction.values()[rng.nextInt(4)];
-            Car car = new Car(step * timestep, lane, choice);
+            int shift = 1 + rng.nextInt(3); // 1, 2, 3
+            int choiceIdx = (lane.ordinal() + shift) % 4;
+
+            Car car = new Car(step * timestep, lane, Direction.values()[choiceIdx]);
 
             print(car);
             laneCars.put(lane, car);
-            laneSteps.put(lane, step);
         }
     }
 
