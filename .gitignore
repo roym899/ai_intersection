@@ -7,3 +7,7 @@ build-*
 /bin/
 .classpath
 .project
+*.idea
+*.class
+*.in
+*.iml
