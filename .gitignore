@@ -4,6 +4,9 @@
 *.swp
 *.user
 build-*
+/bin/
+.classpath
+.project
 *.idea
 *.class
 *.in
