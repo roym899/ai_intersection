@@ -13,7 +13,7 @@ void Firstcomefirstserve::add_min_starts_length(double min_start,std::vector<dou
 std::vector<double> Firstcomefirstserve::solve(){
 	std::vector<double> arrival_times;
 	int counter = 0;
-	for (std::vector<double> &min_start: min_starts)
+	for (double &min_start: min_starts)
 	{
 		if(counter == 0){
 			arrival_times[counter] = min_start;
