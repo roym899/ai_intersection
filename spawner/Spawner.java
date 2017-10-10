@@ -19,7 +19,7 @@ public class Spawner {
     public static void main(String[] args) throws IOException {
 
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
-        Random rng = new Random();
+        Random rng = new Random(42);
 
         /*
          * Read all initial values.
@@ -45,7 +45,7 @@ public class Spawner {
         System.out.print(timestep + " ");
 
         // TODO: Remove
-        System.out.println();
+        System.err.println();
 
         /*
          * Generate cars.
@@ -55,20 +55,27 @@ public class Spawner {
         int maxStep = (int) Math.floor(totalTime / timestep);
 
         // Choose car timestamps
-        Set<Integer> timestamps = new HashSet<>();
+        Set<Integer> spawnSteps = new HashSet<>();
         for (int count = 0; count < numCars; ++count) {
             int step = rng.nextInt(maxStep);
-            while (!timestamps.add(step))
+            while (!spawnSteps.add(step) && spawnSteps.size() < maxStep)
                 step = rng.nextInt(maxStep);
         }
+
+
+        if (spawnSteps.size() < numCars)
+            System.err.println("Too many cars, " + maxStep + " steps available but " + numCars + " have to be spawned");
 
         // The last cars in the lane with their corresponding timestamps
         Map<Direction, Car> laneCars = new EnumMap<>(Direction.class);
 
+        // Count of cars that couldn't be spawned
+        int ditched = 0;
+
         for (int step = 0; step * timestep < totalTime; ++step) {
 
             // Check if it is a selected timestamp
-            if (!timestamps.contains(step))
+            if (!spawnSteps.contains(step))
                 continue;
 
             /*
@@ -100,7 +107,8 @@ public class Spawner {
 
             // Lane was not found
             if (count == 4) {
-                System.out.println("Couldn't find a lane at step=" + step + ", no car spawned");
+                System.err.println("Couldn't find a lane for car at timestamp " + (step * timestep));
+                ++ditched;
                 continue;
             }
 
@@ -117,6 +125,10 @@ public class Spawner {
             print(car);
             laneCars.put(lane, car);
         }
+
+        System.err.print("Spawning finished. " + ditched + " cars ditched.");
+
+        System.out.println();
     }
 
 
@@ -126,7 +138,7 @@ public class Spawner {
         System.out.print(car.choice() + " ");
 
         // TODO: Remove
-        System.out.println();
+        System.err.println();
     }
 }
 
