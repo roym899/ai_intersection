@@ -21,6 +21,8 @@ public:
 	// returns the current timestamp
 	double sim_step(double time_step);
 
+	void cruise_control(const std::vector<double> arrival_times, double time_step);
+
 	void add_car(const Car &car);
 
 	std::vector<int> get_bin_sequence_for_car(const Car &car);

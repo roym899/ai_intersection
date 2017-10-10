@@ -11,7 +11,7 @@ public class Car {
     public Car(double timestamp, Direction lane, Direction choice) {
         if (lane == choice)
             throw new IllegalArgumentException("Choice cannot be the same as lane");
-        
+
         this.timestamp = timestamp;
         this.lane = lane;
         this.choice = choice;

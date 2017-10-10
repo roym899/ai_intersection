@@ -174,6 +174,28 @@ void Intersection::update_fields() {
 	}	
 }
 
+
+// Sets the needed acceleration to reach the intersection at the designated time
+// needs to be called every simulation step.
+// outputs error if a constraint can't be met. --> what happens if there is a error?
+void Intersection::cruise_control(const std::vector<double> arrival_times, double time_step){
+	int car_counter = 0;
+	int time_difference = 0;
+	double v_need = 0;
+	double a_need = 0;
+	for(Car &car : cars){
+		time_difference = arrival_times[car_counter] - time_step;
+		v_need = car.current_distance / (time_difference);
+		a_need = (v_need - car.current_velocity) / (time_difference);
+		car.current_acceleration = a_need ; 
+		car_counter++;
+
+		if (v_need > max_velocity || a_need > max_acceleration || a_need < (-max_acceleration)){
+			std::cerr << "Constraint violated" << std::endl;
+		}
+	}
+}
+
 std::ostream& operator<< (std::ostream& stream, const Intersection& intersection) {
 	// intersection variables
 	stream << intersection.lane_length << " " << intersection.timestamp << " ";
