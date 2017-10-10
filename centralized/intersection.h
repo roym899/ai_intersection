@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "car.h"
+#include "csp_solver.h"
 
 
 class Intersection
@@ -22,6 +23,8 @@ public:
 
 	void add_car(const Car &car);
 
+	std::vector<int> get_bin_sequence_for_car(const Car &car);
+
 	friend std::ostream& operator<< (std::ostream& stream, const Intersection& intersection);
 
 private:
@@ -29,6 +32,7 @@ private:
 
 	std::vector<Car> cars;
 	bool fields[4];
+	bool replan;
 
 	double timestamp;
 	double max_velocity;
