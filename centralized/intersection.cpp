@@ -67,10 +67,19 @@ double Intersection::sim_step(double time_step) {
 
 		replan = false;
 
+		// SIMPLE VERSION TO TEST SCHEDULING: 
+		//   just set the velocity to the average velocity to hit the intersection
 		int count = 0;
 		for(Car &car : cars)
 			car.current_velocity = car.current_distance / times[count++];
+
+		arrival_times = times;
+		for(auto &arrival_time : arrival_times) {
+			arrival_time += time_step;
+		}
 	}
+
+	//cruise_control(time_step);
 
 	// simulate all cars
 	for(Car &car : cars) {
@@ -178,7 +187,7 @@ void Intersection::update_fields() {
 // Sets the needed acceleration to reach the intersection at the designated time
 // needs to be called every simulation step.
 // outputs error if a constraint can't be met. --> what happens if there is a error?
-void Intersection::cruise_control(const std::vector<double> arrival_times, double time_step){
+void Intersection::cruise_control(double time_step){
 	int car_counter = 0;
 	int time_difference = 0;
 	double v_need = 0;

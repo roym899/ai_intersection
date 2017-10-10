@@ -21,7 +21,7 @@ public:
 	// returns the current timestamp
 	double sim_step(double time_step);
 
-	void cruise_control(const std::vector<double> arrival_times, double time_step);
+	void cruise_control(double time_step);
 
 	void add_car(const Car &car);
 
@@ -33,6 +33,7 @@ private:
 	void update_fields();
 
 	std::vector<Car> cars;
+	std::vector<double> arrival_times;
 	bool fields[4];
 	bool replan;
 

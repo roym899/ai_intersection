@@ -4,9 +4,10 @@
 #include <iostream>
 
 // TODO:
-// handling for: same lane no passing allowed
-// constant constraints for cars already on intersection
-// handling for max time constraint
+// what if no plateau / acceleration phase => proper calculation in intersection.cpp
+// non shiftable constraints for cars already on intersection
+// handling for max time constraint (also calculation in intersection.cpp!)
+// find the best solution from all found solutions!
 
 void CSP_Solver::add_range_bin_sequence(double min_start, 
                                         double max_start, 
@@ -103,8 +104,6 @@ void CSP_Solver::solve(std::vector< std::vector<double> >& solutions,
                     shift_stack.push(new_shift_second);
                 }
             }
-
-            // TODO handle special case of same first bin (no passing on same lane)
 
         }
 
