@@ -18,5 +18,5 @@ The format of init.dat must be as such:
 
 There will only be one car generated for a certain timestamp. For a lot of cars to spawn, give a high number of cars
 with a small timestep. If printing to the terminal, it'll give a nicely formatted output with a combination of stdout
-and stderr. So when using a pipe, it is normal to get a few newlines + error messages if a car couldn't be spawned or
-no error messages.
+and stderr. So when using a pipe, it is normal to get a few newlines + error messages in the console if a car couldn't
+be spawned.
