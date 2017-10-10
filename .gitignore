@@ -4,3 +4,7 @@
 *.swp
 *.user
 build-*
+*.idea
+*.class
+*.in
+*.iml
