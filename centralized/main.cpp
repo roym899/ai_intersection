@@ -66,6 +66,8 @@ int main() {
 
     // Create new Intersection
     Intersection intersection(max_velocity,max_acceleration,lane_length);
+
+    // Simulation loop
     timestamp = 0;
     bool current_timestamp = true;
     while(!intersection.is_empty() || car_queue.size() != 0) {
