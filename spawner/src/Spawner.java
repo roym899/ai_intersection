@@ -11,13 +11,10 @@ public class Spawner {
     /**
      * Runs a spawner to generate random cars at random timestamps.
      *
-     * TODO: Choice must not be the same lane that a car comes from.
-     *
      * @param args
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         Random rng = new Random(42);
 
@@ -44,8 +41,7 @@ public class Spawner {
         System.out.print(laneLength + " ");
         System.out.print(timestep + " ");
 
-        // TODO: Remove
-        System.err.println();
+        System.out.println();
 
         /*
          * Generate cars.
@@ -126,9 +122,7 @@ public class Spawner {
             laneCars.put(lane, car);
         }
 
-        System.err.print("Spawning finished. " + ditched + " cars ditched.");
-
-        System.out.println();
+        System.err.println("Spawning finished. " + ditched + " cars ditched.");
     }
 
 
@@ -137,8 +131,7 @@ public class Spawner {
         System.out.print(car.lane() + " ");
         System.out.print(car.choice() + " ");
 
-        // TODO: Remove
-        System.err.println();
+        System.out.println();
     }
 }
 
