@@ -1,11 +1,18 @@
+import cafesat.api.Solver.solveForSatisfiability
 
+import cafesat.api.FormulaBuilder._
+import cafesat.api.Formulas._
 
 object Main extends App {
-  val input = io.Source.stdin.getLines().toList
-
-  val initial = input.head
-  val cars = input.tail
-
-  val parsed = cars.map(car => Parser.parseCar(car))
-  parsed.foreach(println)
+  val p = propVar()
+  val q = propVar()
+  
+  val f: Formula = p && !q
+  
+  solveForSatisfiability(f) match {
+    case None => println("Nope!")
+    case Some(model) => 
+      println("p is " + model.get(p))
+      println("q is " + model.get(q))
+  }
 }

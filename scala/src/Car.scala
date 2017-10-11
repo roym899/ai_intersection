@@ -3,9 +3,9 @@
   */
 sealed trait Direction
 
-case object N extends Direction { val name = "N" }
-case object S extends Direction { val name = "S" }
-case object W extends Direction { val name = "W" }
-case object E extends Direction { val name = "E" }
+case object N extends Direction
+case object S extends Direction
+case object W extends Direction
+case object E extends Direction
 
 class Car(val timestamp: Double, val lane: Direction, val choice: Direction)
