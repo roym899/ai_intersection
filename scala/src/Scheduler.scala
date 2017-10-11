@@ -5,9 +5,11 @@ object Scheduler {
   def createMap(cars: List[Car], steps: Int): Map[(Car, Slot), PropVar] = {
     val allCells = NW :: NE :: SW :: SE :: Nil
     val allSlots = ((0 to steps).toList) flatMap (s => allCells.map(new Slot(_, s)))
+    
     val allKeys = cars flatMap { c =>
-      allSlots filter (s => Util.cells(c.lane, c.choice).contains(s.cell)) map (s => (c, s))
+      allSlots filter (s => Util.cells(c.lane, c.choice).contains(s.cell)) map ((c, _))
     }
+    
     return allKeys.map(k => (k, propVar())).toMap
   }
 }
