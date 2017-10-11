@@ -7,7 +7,7 @@ object Main extends App {
   val p = propVar()
   val q = propVar()
   
-  val f: Formula = p && !q
+  val f: Formula = p && !p
   
   solveForSatisfiability(f) match {
     case None => println("Nope!")
