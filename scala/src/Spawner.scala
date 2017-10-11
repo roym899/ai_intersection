@@ -2,7 +2,7 @@ import scala.util.Random
 
 
 object Spawner {
-  def spawn(time: Int, cars: Int): List[Car] = {
+  def spawn(length: Int, cars: Int): List[Car] = {
     val rng = new Random(42)
     
     def gen() = rng.nextInt(4) match {
@@ -16,7 +16,7 @@ object Spawner {
       if (n == 0)
         acc
       else {
-        val dist = rng.nextInt(time)
+        val dist = rng.nextInt(length)
         val lane = gen()
         val choice = gen()
         if (acc.forall(c => c.lane != lane || c.dist != dist))
