@@ -10,12 +10,14 @@ const double field_time = 2.0;
 // cruise control should only work for cars which are not on intersection
 // arrival time vector should have the right length (same as cars?, what if one car gets removed?)
 
-Intersection::Intersection(double max_velocity, double max_acceleration, double lane_length) 
+Intersection::Intersection(double max_velocity, double max_acceleration, double lane_length, bool fcfs) 
     : timestamp(0), 
       lane_length(lane_length), 
       max_velocity(max_velocity),
       max_acceleration(max_acceleration),
-      replan(false) {
+      replan(false),
+      fcfs_remaining_time(0),
+      fcfs(fcfs) {
     for(int i=0; i<sizeof(fields); ++i) 
         fields[i] = false;
 }
@@ -41,11 +43,50 @@ void Intersection::add_car(const Car &car) {
 // returns the current timestamp
 double Intersection::sim_step(double time_step) {
     // update remaining times
-    for(double& remaining_time : remaining_times) 
+    for(double& remaining_time : remaining_times) {
         remaining_time -= time_step;
+    }
+    fcfs_remaining_time -= time_step;
 
     // replan for current situation
-    if(replan) {// a car has been added => replan for new situation
+    if(replan && fcfs) {
+        for(Car &car : cars) {
+            // car has just been added
+            if(car.current_distance == lane_length) { 
+                std::vector<int> bin_sequence = get_bin_sequence_for_car(car);
+                std::vector<double> length_sequence(bin_sequence.size(), field_time);
+                double length_sum = 0;
+                for (double length: length_sequence)
+                    length_sum += length;
+
+                // calculate minimum arrival time
+
+                // assume max acceleration until max velocity is reached
+                double t_max_vel = ( max_velocity - car.current_velocity ) / max_acceleration;
+                double max_vel_dist = car.current_distance - car.current_velocity * t_max_vel - max_acceleration / 2.0 * pow(t_max_vel, 2);
+
+                // can not reach max vel before intersection, thus assume max acceleration until hitting the intersection
+                double t_min;
+                if (max_vel_dist < 0) {
+                    // solution can be derived by pq-formula
+                    t_min = -car.current_velocity/max_acceleration + sqrt(pow(car.current_velocity, 2)/pow(max_acceleration, 2) + 2.0*car.current_distance/max_acceleration);
+                }
+                else {
+                    t_min = 1.0 / max_velocity * max_vel_dist + t_max_vel;
+                }
+
+                if(t_min > fcfs_remaining_time) {
+                    remaining_times.push_back(t_min);
+                    fcfs_remaining_time = t_min + length_sum;
+                }
+                else {
+                    remaining_times.push_back(fcfs_remaining_time);
+                    fcfs_remaining_time += length_sum;
+                }
+            }
+        }
+    }
+    else if(replan && !fcfs) {// a car has been added => replan for new situation
         CSP_Solver solver;
         std::array<double, 4> previous_min_time;
 
@@ -278,7 +319,7 @@ void Intersection::cruise_control(double time_step){
             
             car_counter++;
 
-            if (v_need > max_velocity) {
+            if (v_need > max_velocity*1.01) {
                 std::cerr << "Constraint violated " << v_need << " " << max_velocity  << std::endl;
             }
         }
