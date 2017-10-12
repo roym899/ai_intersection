@@ -39,8 +39,40 @@ void QIntersectionWidget::paintEvent(QPaintEvent *event)
     const double line_thickness = 0.25 *scale_factor;
     const double corner_radius = 0.3 * scale_factor;
 
+    const double drive_away_speed = 20.0 * scale_factor;
+
     current_sim_time += timer_interval/1000;
     std::cout << current_sim_time << std::endl;
+
+    // update the leaving car position
+    for(auto it = n_leaving_cars.begin(); it!=n_leaving_cars.end();) {
+        it->first += timer_interval/1000 * drive_away_speed;
+        if (it->first > lane_length)
+            it = n_leaving_cars.erase(it);
+        else
+            ++it;
+    }
+    for(auto it = s_leaving_cars.begin(); it!=s_leaving_cars.end();) {
+        it->first += timer_interval/1000 * drive_away_speed;
+        if (it->first > lane_length)
+            it = s_leaving_cars.erase(it);
+        else
+            ++it;
+    }
+    for(auto it = w_leaving_cars.begin(); it!=w_leaving_cars.end();) {
+        it->first += timer_interval/1000 * drive_away_speed;
+        if (it->first > lane_length)
+            it = w_leaving_cars.erase(it);
+        else
+            ++it;
+    }
+    for(auto it = e_leaving_cars.begin(); it!=e_leaving_cars.end();) {
+        it->first += timer_interval/1000 * drive_away_speed;
+        if (it->first > lane_length)
+            it = e_leaving_cars.erase(it);
+        else
+            ++it;
+    }
 
 
     // search for most up-to-date element in queue
@@ -57,6 +89,12 @@ void QIntersectionWidget::paintEvent(QPaintEvent *event)
         string_stream >> token;
         int count =  0;
         char current_lane;
+
+        // create backup of fields to keep track of cars leaving the intersection
+        int old_fields[4];
+        for(int i=0; i<4; ++i)
+            old_fields[i] = fields[i];
+
         while(string_stream >> token) {
             if(count < 4) {
                 fields[count] = std::stoi(token);
@@ -77,9 +115,9 @@ void QIntersectionWidget::paintEvent(QPaintEvent *event)
                         // id appearing for the first time, generate new color for this car
                         // while loop, if e.g. id 2 appears first -> there should be a color for id 1 as well
                         // note that car id 1 has color 0 !
-                        int r = rand() % 255 + 0;
-                        int g = rand() % 255 + 0;
-                        int b = rand() % 255 + 0;
+                        int r = rand() % 255;
+                        int g = rand() % 255;
+                        int b = rand() % 255;
                         car_colors.push_back(QColor(r,g,b));
                     }
                     string_stream >>  token;
@@ -103,7 +141,28 @@ void QIntersectionWidget::paintEvent(QPaintEvent *event)
                 }
             }
         }
+
+        for(int i=0; i<4; ++i) {
+            bool found = false;
+            if(old_fields[i] == 0)
+                continue;
+            for(int j=0; j<4; ++j) {
+                if(old_fields[i] == fields[j])
+                    found = true;
+            }
+            if (found == false) {
+                if(i == 0)
+                    w_leaving_cars.push_back(std::make_pair(-1, old_fields[i]));
+                if(i == 1)
+                    n_leaving_cars.push_back(std::make_pair(-1, old_fields[i]));
+                if(i == 2)
+                    s_leaving_cars.push_back(std::make_pair(-1, old_fields[i]));
+                if(i == 3)
+                    e_leaving_cars.push_back(std::make_pair(-1, old_fields[i]));
+            }
+         }
     }
+
 
 
     // define the colors for the intersection
@@ -149,12 +208,28 @@ void QIntersectionWidget::paintEvent(QPaintEvent *event)
         QRect car_rect(-lane_width/2-car_width/2, lane_width+distance, car_width, car_length);
         painter.drawRoundedRect(car_rect, corner_radius, corner_radius);
     }
+    for(auto &pair : n_leaving_cars) {
+        double distance = pair.first;
+        int id = pair.second;
+        painter.setPen(car_colors[id-1]);
+        painter.setBrush(car_colors[id-1]);
+        QRect car_rect(lane_width/2-car_width/2, lane_width+distance, car_width, car_length);
+        painter.drawRoundedRect(car_rect, corner_radius, corner_radius);
+    }
     for(const auto &pair : s_cars) {
         double distance = pair.first;
         int id = pair.second;
         painter.setPen(car_colors[id-1]);
         painter.setBrush(car_colors[id-1]);
         QRect car_rect(lane_width/2-car_width/2, -lane_width-distance-car_length, car_width, car_length);
+        painter.drawRoundedRect(car_rect, corner_radius, corner_radius);
+    }
+    for(auto &pair : s_leaving_cars) {
+        double distance = pair.first;
+        int id = pair.second;
+        painter.setPen(car_colors[id-1]);
+        painter.setBrush(car_colors[id-1]);
+        QRect car_rect(-lane_width/2-car_width/2, -lane_width-distance-car_length, car_width, car_length);
         painter.drawRoundedRect(car_rect, corner_radius, corner_radius);
     }
     for(const auto &pair : e_cars) {
@@ -165,12 +240,28 @@ void QIntersectionWidget::paintEvent(QPaintEvent *event)
         QRect car_rect(lane_width+distance, lane_width/2-car_width/2, car_length, car_width);
         painter.drawRoundedRect(car_rect, corner_radius, corner_radius);
     }
+    for(const auto &pair : e_leaving_cars) {
+        double distance = pair.first;
+        int id = pair.second;
+        painter.setPen(car_colors[id-1]);
+        painter.setBrush(car_colors[id-1]);
+        QRect car_rect(lane_width+distance, -lane_width/2-car_width/2, car_length, car_width);
+        painter.drawRoundedRect(car_rect, corner_radius, corner_radius);
+    }
     for(const auto &pair : w_cars) {
         double distance = pair.first;
         int id = pair.second;
         painter.setPen(car_colors[id-1]);
         painter.setBrush(car_colors[id-1]);
         QRect car_rect(-lane_width-distance-car_length, -lane_width/2-car_width/2, car_length, car_width);
+        painter.drawRoundedRect(car_rect, corner_radius, corner_radius);
+    }
+    for(const auto &pair : w_leaving_cars) {
+        double distance = pair.first;
+        int id = pair.second;
+        painter.setPen(car_colors[id-1]);
+        painter.setBrush(car_colors[id-1]);
+        QRect car_rect(-lane_width-distance-car_length, +lane_width/2-car_width/2, car_length, car_width);
         painter.drawRoundedRect(car_rect, corner_radius, corner_radius);
     }
 

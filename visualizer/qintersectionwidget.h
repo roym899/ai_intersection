@@ -30,6 +30,10 @@ private:
     std::vector< std::pair<double, int> > s_cars;
     std::vector< std::pair<double, int> > e_cars;
     std::vector< std::pair<double, int> > w_cars;
+    std::vector< std::pair<double, int> > n_leaving_cars;
+    std::vector< std::pair<double, int> > s_leaving_cars;
+    std::vector< std::pair<double, int> > e_leaving_cars;
+    std::vector< std::pair<double, int> > w_leaving_cars;
 
     std::vector< QColor > car_colors;
 
