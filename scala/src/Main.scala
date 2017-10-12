@@ -22,7 +22,7 @@ object Main extends App {
 
   val cars = Spawner.spawn(length, num)
   
-  val solutions = for(i <- 5 to timeMax) yield { //BORNE INF TODO
+  val solutions = for(i <- 1 to timeMax) yield { 
      val propVars = Scheduler.createMap(cars, i)
      findBestSolution(i, propVars)
   }
@@ -79,7 +79,7 @@ object Main extends App {
       }
 
       val followProps = cellProps.foldRight(List.fill(timeMax + 1)(bool2formula(true))) {
-        (props, acc) => (acc.tail zip props) map { case (f1, f2) => f1 && f2 }
+        (props, acc) => ((if(acc.size > 0) acc.tail else acc) zip props) map { case (f1, f2) => f1 && f2 }
       }
 
       or(followProps: _*)
