@@ -78,6 +78,7 @@ int main() {
             }
             std::pair<Car,double> current_car_pair = car_queue.front();
             if(current_car_pair.second <= timestamp){
+                std::cerr << "add_car" << std::endl;
                 intersection.add_car(current_car_pair.first);
                 car_queue.pop();
             }
@@ -87,7 +88,6 @@ int main() {
             
         }
         
-
         timestamp = intersection.sim_step(time_step);
 
         std::cout << intersection << std::endl;

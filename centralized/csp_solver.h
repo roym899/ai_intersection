@@ -27,15 +27,19 @@ public:
 	CSP_Solver() {};
 	~CSP_Solver() {};
 	
-	std::vector< std::array<int, 4> > find_conflicts(const std::vector< std::vector<Range> >& range_sequences);
+	std::vector< std::array<int, 5> > find_conflicts(const std::vector< std::vector<Range> >& range_sequences);
+	void add_range_bin_constraint(int bin, Range range);
 	void add_range_bin_sequence(double min_start, double max_start, std::vector<int> bin_sequence, std::vector<double> length_sequence);
 	std::vector<double> solve();
 	void solve(std::vector< std::vector<double> >& solutions,
                int depth);
 
-	double get_shift(const std::array<int, 4>& shift_array) const;
+
+	double get_shift(const std::array<int, 5>& shift_array) const;
 
 private:
+	std::vector<int> fixed_bins;
+	std::vector<Range> fixed_ranges;
 	std::vector<std::vector<Range>> range_sequences;
 	std::vector<std::vector<int>> bin_sequences;
 	std::vector<double> min_starts;

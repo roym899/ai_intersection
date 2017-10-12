@@ -33,7 +33,7 @@ private:
 	void update_fields();
 
 	std::vector<Car> cars;
-	std::vector<double> arrival_times;
+	std::vector<double> remaining_times;
 	bool fields[4];
 	bool replan;
 
