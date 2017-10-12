@@ -1,0 +1,13 @@
+5
+N E 3 8
+E S 4 5
+E S 0 1
+N S 2 4
+W N 2 6
+W N 4 8
+S N 0 1
+S N 1 2
+S N 4 8
+S N 3 6
+W N 1 4
+E W 2 4
