@@ -2,11 +2,12 @@
 #include <string>
 #include <utility>
 #include <queue>
+#include <string.h>
 #include "intersection.h"
 #include "car.h"
 
 
-int main() {
+int main(int argc, char *argv[]) {
     /* read */
     std::string input;
     // read transition matrix
@@ -17,6 +18,7 @@ int main() {
     double lane_length = 0;
     double time_step = 0;
     double timestamp = 0;
+    bool fcfs = false;
     std::string lane = "";
     std::string goal = "";
 
@@ -26,6 +28,12 @@ int main() {
     int counter = 0;
     bool property = false;
     int car_counter = 0;
+
+    // evaluate command line parameters
+    if (argc >= 2 && strcmp(argv[1], "fcfs") == 0) {
+        fcfs = true;
+    }
+
     while(std::cin >> input) {
         property = false;
         switch (counter){
@@ -65,7 +73,7 @@ int main() {
 
 
     // Create new Intersection
-    Intersection intersection(max_velocity,max_acceleration,lane_length);
+    Intersection intersection(max_velocity,max_acceleration,lane_length,fcfs);
 
     // Simulation loop
     timestamp = 0;

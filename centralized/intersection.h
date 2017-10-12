@@ -11,7 +11,7 @@
 class Intersection
 {
 public:
-	Intersection(double max_velocity, double max_acceleration, double lane_length);
+	Intersection(double max_velocity, double max_acceleration, double lane_length, bool fcfs);
 	~Intersection();
 
 	bool is_empty();
@@ -41,6 +41,8 @@ private:
 	double max_velocity;
 	double max_acceleration;
 	double lane_length;
+	double fcfs_remaining_time;
+	bool fcfs;
 };
 
 #endif

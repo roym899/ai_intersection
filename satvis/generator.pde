@@ -95,23 +95,26 @@ int readDir(String s) {
   else if (s.equals("E"))
     return DIR_E;
   else
-    return -1;
+    throw new Error();
 }
 
 boolean canMove(Car car, List<Car> cars, int time) {
+  
+  // At intersection
   if (car.dist == 0) {
     if (time == car.designated)
       return true;
     else if (time < car.designated)
       return false;
     else
-      throw new Error("Car did not get to intersection in time");
+      throw new Error("Car did not reach intersection at designated time");
   }
+  
   for (Car c : cars) {
     if (c == car)
       continue;
 
-    if (c.dist - 1 == car.dist)
+    if (c.dist == car.dist - 1)
       return false;
   }
   return true;
