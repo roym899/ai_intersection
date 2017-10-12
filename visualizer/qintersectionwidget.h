@@ -24,11 +24,14 @@ private:
     double unscaled_lane_length;
     std::queue< std::pair<std::string, double> > sim_strings;
     double current_sim_time;
-    bool fields[4];
-    std::vector<double> n_cars;
-    std::vector<double> s_cars;
-    std::vector<double> e_cars;
-    std::vector<double> w_cars;
+
+    int fields[4];
+    std::vector< std::pair<double, int> > n_cars;
+    std::vector< std::pair<double, int> > s_cars;
+    std::vector< std::pair<double, int> > e_cars;
+    std::vector< std::pair<double, int> > w_cars;
+
+    std::vector< QColor > car_colors;
 
 signals:
 
