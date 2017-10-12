@@ -21,7 +21,7 @@ int laneLength;
 int time;
 
 void setup() {
-  frameRate(2);
+  frameRate(1);
   noStroke();
 
   String[] lines = loadStrings("simulation.txt");
@@ -60,6 +60,10 @@ void setup() {
   Collections.sort(cars.get(1), asc);
   Collections.sort(cars.get(2), asc);
   Collections.sort(cars.get(3), asc);
+  
+  for (Car c : cars.get(3)) {
+    println(c.dist);
+  }
 
   time = 0;
 }
@@ -74,9 +78,16 @@ void draw() {
   rect(150, 0, 50, 350);
   rect(0, 150, 350, 50);
 
+  // Text
+
   fill(0);
-  textSize(15);
-  text(String.format("TIME: %d", time), 0, 15);
+  textSize(12);
+  text(String.format("TIME: %d", time), 0, 12);
+  text("NORTH: TURQUOISE", 0, 24);
+  text("SOUTH: BLUE", 0, 36);
+  text("WEST: RED", 0, 48);
+  text("EAST: YELLOW", 0, 60);
+
 
   translate(width / 2, height / 2);
 
@@ -129,6 +140,8 @@ void draw() {
 
   // Prepare for next time step
 
+  time++;
+
   // First make cars that are no longer needed leave the intersection
 
   Map<Integer, Turning> newTurning = new HashMap<Integer, Turning>();
@@ -143,29 +156,36 @@ void draw() {
   // Then make the cars that
 
   for (Map.Entry<Integer, List<Car>> entry : cars.entrySet()) {
+    
     List<Car> lane = entry.getValue();
     Iterator<Car> it = lane.iterator();
 
     while (it.hasNext()) {
+      
       Car car = it.next();
+      
       if (canMove(car, lane, time)) {
-
+        
         // This means he has to leave the intersection
         if (car.dist == 0) {
+          
+          // Remove from lane
           it.remove();
+          
+          // Create intersection car
           Turning t = new Turning(car, entry.getKey());
           int cell = t.cells.get(t.step);
+          
           if (!turning.containsKey(cell)) {
             turning.put(t.cells.get(t.step), t);
           } else {
             throw new Error("Cell is occupied!");
           }
+          
         } else {
           car.dist--;
         }
       }
     }
   }
-
-  time++;
 }
