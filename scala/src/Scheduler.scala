@@ -9,7 +9,6 @@ object Scheduler {
     val allKeys = cars flatMap { c =>
       allSlots filter (s => Util.cells(c.lane, c.choice).contains(s.cell) && s.step > c.dist) map ((c, _))
     }
-    
     return allKeys.map(k => (k, propVar())).toMap
   }
 }
