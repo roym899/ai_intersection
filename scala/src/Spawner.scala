@@ -19,7 +19,7 @@ object Spawner {
         val dist = rng.nextInt(length)
         val lane = gen()
         val choice = gen()
-        if (acc.forall(c => c.lane != lane || c.dist != dist))
+        if (acc.forall(c => c.lane != lane || c.dist != dist) && lane != choice)
           rec(n - 1, new Car(dist, lane, choice) :: acc)
         else
           rec(n, acc)
