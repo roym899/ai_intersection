@@ -8,4 +8,4 @@ case object S extends Direction
 case object W extends Direction
 case object E extends Direction
 
-class Car(val timestamp: Double, val lane: Direction, val choice: Direction)
+class Car(val dist: Int, val lane: Direction, val choice: Direction)
