@@ -18,8 +18,8 @@ Intersection::Intersection(double max_velocity, double max_acceleration, double 
       replan(false),
       fcfs_remaining_time(0),
       fcfs(fcfs) {
-    for(int i=0; i<sizeof(fields); ++i) 
-        fields[i] = false;
+    for(int i=0; i<sizeof(fields)/sizeof(int); ++i) 
+        fields[i] = 0;
 }
 
 Intersection::~Intersection() {
@@ -218,9 +218,9 @@ double Intersection::sim_step(double time_step) {
 
 void Intersection::update_fields() {
 
-    // init all fields with false
-    for(int i=0; i<sizeof(fields); ++i) 
-        fields[i] = false;
+    // init all fields with no car on it
+    for(int i=0; i<sizeof(fields)/sizeof(int); ++i) 
+        fields[i] = 0;
 
     for(std::vector<Car>::iterator it=cars.begin(); it != cars.end();) {
         if(it->current_distance <= 0) { // it->is on intersection
@@ -278,15 +278,14 @@ void Intersection::update_fields() {
 
             if (remove) {
                 it = cars.erase(it);
-
             }
             else {
                 if(idx == -1)
                     std::cerr << "Error: idx has not been set" << std::endl;
-                if(fields[idx])
+                if(fields[idx] != 0)
                     std::cerr << "Error @" << timestamp << ": field " << idx << " is already occupied!!" << std::endl;
                 else
-                    fields[idx] = true;
+                    fields[idx] = it->id;
                 ++it;
             }
         }
@@ -332,11 +331,8 @@ std::ostream& operator<< (std::ostream& stream, const Intersection& intersection
 
 
     // current intersection state
-    for(int i=0; i<sizeof(intersection.fields); ++i)  {
-        if (intersection.fields[i])
-            stream << "1 ";
-        else 
-            stream << "0 ";
+    for(int i=0; i<sizeof(intersection.fields)/sizeof(int); ++i)  {
+        stream << intersection.fields[i] << " ";
     }
 
     char lanes[] = {'N', 'E', 'S', 'W'};
@@ -345,7 +341,7 @@ std::ostream& operator<< (std::ostream& stream, const Intersection& intersection
         stream << lanes[i] << " ";
         for(const Car &car : intersection.cars) {
             if(car.lane == lanes[i])
-                stream << car.current_distance << " ";
+                stream << car.id << " " << car.current_distance << " ";
         }   
     }
 

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <cstdlib>
 
 QIntersectionWidget::QIntersectionWidget(QWidget *parent) : QWidget(parent), timer_interval(33), current_sim_time(0)
 {
@@ -21,7 +22,7 @@ QIntersectionWidget::QIntersectionWidget(QWidget *parent) : QWidget(parent), tim
     update_timer->start(timer_interval);
 
     for(int i=0; i<sizeof(fields); ++i)
-        fields[i] = false;
+        fields[i] = 0;
 }
 
 void QIntersectionWidget::paintEvent(QPaintEvent *event)
@@ -58,11 +59,7 @@ void QIntersectionWidget::paintEvent(QPaintEvent *event)
         char current_lane;
         while(string_stream >> token) {
             if(count < 4) {
-                if(token ==  "0")
-                    fields[count] = false;
-                else
-                    fields[count] = true;
-
+                fields[count] = std::stoi(token);
                 ++count;
             }
             else {
@@ -75,19 +72,30 @@ void QIntersectionWidget::paintEvent(QPaintEvent *event)
                 else if(token == "S")
                     current_lane = 'S';
                 else {
+                    int id = std::stoi(token);
+                    while (id > car_colors.size()) {
+                        // id appearing for the first time, generate new color for this car
+                        // while loop, if e.g. id 2 appears first -> there should be a color for id 1 as well
+                        // note that car id 1 has color 0 !
+                        int r = rand() % 255 + 0;
+                        int g = rand() % 255 + 0;
+                        int b = rand() % 255 + 0;
+                        car_colors.push_back(QColor(r,g,b));
+                    }
+                    string_stream >>  token;
                     if(std::stod(token) > 0) {
                         switch(current_lane) {
                         case 'N':
-                            n_cars.push_back(std::stod(token)*scale_factor);
+                            n_cars.push_back(std::make_pair(std::stod(token)*scale_factor, id));
                             break;
                         case 'S':
-                            s_cars.push_back(std::stod(token)*scale_factor);
+                            s_cars.push_back(std::make_pair(std::stod(token)*scale_factor, id));
                             break;
                         case 'E':
-                            e_cars.push_back(std::stod(token)*scale_factor);
+                            e_cars.push_back(std::make_pair(std::stod(token)*scale_factor, id));
                             break;
                         case 'W':
-                            w_cars.push_back(std::stod(token)*scale_factor);
+                            w_cars.push_back(std::make_pair(std::stod(token)*scale_factor, id));
                             break;
 
                         }
@@ -132,42 +140,62 @@ void QIntersectionWidget::paintEvent(QPaintEvent *event)
     painter.drawLine(street_line_w_2);
 
 
-    painter.setPen(QPen(green, 0));
-    painter.setBrush(green);
 
-    for(const double &distance : n_cars) {
+    for(auto &pair : n_cars) {
+        double distance = pair.first;
+        int id = pair.second;
+        painter.setPen(car_colors[id-1]);
+        painter.setBrush(car_colors[id-1]);
         QRect car_rect(-lane_width/2-car_width/2, lane_width+distance, car_width, car_length);
         painter.drawRoundedRect(car_rect, corner_radius, corner_radius);
     }
-    for(const double &distance : s_cars) {
+    for(const auto &pair : s_cars) {
+        double distance = pair.first;
+        int id = pair.second;
+        painter.setPen(car_colors[id-1]);
+        painter.setBrush(car_colors[id-1]);
         QRect car_rect(lane_width/2-car_width/2, -lane_width-distance-car_length, car_width, car_length);
         painter.drawRoundedRect(car_rect, corner_radius, corner_radius);
     }
-    for(const double &distance : e_cars) {
+    for(const auto &pair : e_cars) {
+        double distance = pair.first;
+        int id = pair.second;
+        painter.setPen(car_colors[id-1]);
+        painter.setBrush(car_colors[id-1]);
         QRect car_rect(lane_width+distance, lane_width/2-car_width/2, car_length, car_width);
         painter.drawRoundedRect(car_rect, corner_radius, corner_radius);
     }
-    for(const double &distance : w_cars) {
+    for(const auto &pair : w_cars) {
+        double distance = pair.first;
+        int id = pair.second;
+        painter.setPen(car_colors[id-1]);
+        painter.setBrush(car_colors[id-1]);
         QRect car_rect(-lane_width-distance-car_length, -lane_width/2-car_width/2, car_length, car_width);
         painter.drawRoundedRect(car_rect, corner_radius, corner_radius);
     }
 
-    painter.setPen(QPen(green, 0));
-    painter.setBrush(green);
 
-    if(fields[0]) {
+    if(fields[0] != 0) {
+        painter.setPen(car_colors[fields[0]-1]);
+        painter.setBrush(car_colors[fields[0]-1]);
         QRect field_rect(-lane_width, 0, lane_width, lane_width);
         painter.drawRect(field_rect);
     }
-    if(fields[1]) {
+    if(fields[1] != 0) {
+        painter.setPen(car_colors[fields[1]-1]);
+        painter.setBrush(car_colors[fields[1]-1]);
         QRect field_rect(0, 0, lane_width, lane_width);
         painter.drawRect(field_rect);
     }
-    if(fields[2]) {
+    if(fields[2] != 0) {
+        painter.setPen(car_colors[fields[2]-1]);
+        painter.setBrush(car_colors[fields[2]-1]);
         QRect field_rect(-lane_width, -lane_width, lane_width, lane_width);
         painter.drawRect(field_rect);
     }
-    if(fields[3]) {
+    if(fields[3] != 0) {
+        painter.setPen(car_colors[fields[3]-1]);
+        painter.setBrush(car_colors[fields[3]-1]);
         QRect field_rect(0, -lane_width, lane_width, lane_width);
         painter.drawRect(field_rect);
     }

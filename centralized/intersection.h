@@ -34,7 +34,7 @@ private:
 
 	std::vector<Car> cars;
 	std::vector<double> remaining_times;
-	bool fields[4];
+	int fields[4];
 	bool replan;
 
 	double timestamp;

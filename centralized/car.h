@@ -6,7 +6,7 @@ public:
 	Car(double initial_velocity, char lane, char goal);
 	Car(const Car &car);
 	~Car();
-	
+
 	char lane;
 	char goal;
 	double current_distance;
@@ -14,6 +14,9 @@ public:
 	double current_velocity;
 	double current_acceleration;
 
+	// unique identifier for communication with visualization
+	int id;
+	static int car_counter;
 };
 
 
