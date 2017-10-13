@@ -1,6 +1,9 @@
 import cafesat.api.Formulas._
 import cafesat.api.FormulaBuilder._
 
+/**
+ * Create a Map assigning each pair of (car, slot) to a propositional variable
+ */
 object Scheduler {
   def createMap(cars: List[Car], steps: Int): Map[(Car, Slot), PropVar] = {
     val allCells = NW :: NE :: SW :: SE :: Nil
@@ -12,7 +15,32 @@ object Scheduler {
     return allKeys.map(k => (k, propVar())).toMap
   }
 }
-
+/**
+ * Given a lane and the choice, build a list of which cell the car need to take.
+ * Here are visual examples for a car coming from the south, where X represents a needed cell and O not:
+ * 
+ * Turning right (S to E):
+ * 
+ *      O | O
+ *      -----
+ *      O | X CHOICE
+ *      	 CAR
+ * 
+ * Going straightforward (S to N):
+ * 
+ *      	 CHOICE
+ *      O | X
+ *      -----
+ *      O | X
+ *      	 CAR
+ * 
+ * Turning left (S to W):
+ * 
+ *CHOICE X | X
+ *       -----
+ *       O | X
+ *      		CAR 
+ */
 object Util {
   def cells(lane: Direction, choice: Direction): List[Cell] = lane match {
     case N => choice match {

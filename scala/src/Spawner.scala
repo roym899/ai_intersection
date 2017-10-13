@@ -1,6 +1,8 @@
 import scala.util.Random
 
-
+/**
+ * This object will spawn cars on random lanes and random distances.
+ */
 object Spawner {
   def spawn(length: Int, cars: Int): List[Car] = {
     val rng = new Random(42)
@@ -19,6 +21,7 @@ object Spawner {
         val dist = rng.nextInt(length)
         val lane = gen()
         val choice = gen()
+        // ensure that the place is free and that the lane is not the same as the choice
         if (acc.forall(c => c.lane != lane || c.dist != dist) && lane != choice)
           rec(n - 1, new Car(dist, lane, choice) :: acc)
         else
