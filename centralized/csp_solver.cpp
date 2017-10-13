@@ -4,9 +4,6 @@
 #include <iostream>
 #include <limits>
 
-// TODO:
-// add cruise control
-// comment the code
 
 
 void CSP_Solver::add_range_bin_constraint(int bin, Range range) {
@@ -186,7 +183,8 @@ std::vector<double> CSP_Solver::solve() {
     double range_difference = 0;
 
     std::vector<Range> current_ranges;
-
+    // takes the solution with the minimal time at which the last car leaves the intersection
+    // takes the the arrival time from the last car and adds the time it spends on the intersection center
     for(const std::vector<double>& solution: solutions){
         counter = 0;
         longest_end_time = 0;
