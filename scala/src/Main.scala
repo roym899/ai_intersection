@@ -31,17 +31,18 @@ object Main extends App {
   // Be careful about two main things: Critical case (like too few places for too much cars) are not handled
   // Moreover, too much cars or too much timeMax can quickly become slow, SAT is not polynomial.
   // (we were at max with timeMax = 12 and num = 15)
-  val timeMax = 10
-  val length = 5
-  val num = 3
+  val timeMax = 11
+  val length = 7
+  val num = 17
   
+  val beg = System.currentTimeMillis()
 
   val cars = Spawner.spawn(length, num)
   
   /*
    * This loop ensure to get the optimal solution, i.e. the less time to pass all cars.
    */
-  val solutions = for(i <- 4 to timeMax) yield { // Ensure that if cars should turn left, they will have time to do at least that
+  val solutions = for(i <- 5 to timeMax) yield { // Ensure that if cars should turn left, they will have time to do at least that
      val propVars = Scheduler.createMap(cars, i)
      findBestSolution(i, propVars)
   }
@@ -222,6 +223,8 @@ object Main extends App {
   val firstCells = bestSolution.groupBy{ case (c, s) => c }.map {case (c, l) => l.minBy{case (car, slot) => slot.step}}
   println(length)
   firstCells.map { case (c, s) => println(c.lane + " " +  c.choice + " " +  c.dist + " " + s.step) }
+  val end = System.currentTimeMillis()
+  println( (end - beg))
 }
 
 
