@@ -23,7 +23,7 @@ object Arithmetic {
   /**
    * Encodes a positive integer number into base 2.
    * The `head` element of the resulting list contains the most significant
-   * bit. This function should not return unnecessary leading zeros.
+   * bit. 
    */
   def int2binary(n: Int): List[Boolean] = {
     def convert(i: Int): List[Boolean] = if (i == 0) Nil else (i % 2 == 1) :: convert(i / 2)
@@ -116,7 +116,7 @@ object Arithmetic {
    * The first element of the pair is a list of formulas representing the number
    * of ones in `ns`.
    * The second element is a set of additional constraints that have been gathered along
-   * the way. Hint: see `adder` for understanding how to use additional constraints
+   * the way.
    */
   def countPositiveBits(ns: List[Formula]): (List[Formula], Set[Formula]) = {
     ns.foldLeft((List[Formula](false), Set[Formula]())) { case ((tmpSum, tmpAcc), n) =>
