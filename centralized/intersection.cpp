@@ -4,11 +4,9 @@
 #include <array>
 #include <limits>
 
+// constant time a car spends at an intersection center square
 const double field_time = 2.0;
 
-// TODO:
-// cruise control should only work for cars which are not on intersection
-// arrival time vector should have the right length (same as cars?, what if one car gets removed?)
 
 Intersection::Intersection(double max_velocity, double max_acceleration, double lane_length, bool fcfs) 
     : timestamp(0), 
@@ -185,6 +183,7 @@ double Intersection::sim_step(double time_step) {
         remaining_times = times;
     }
 
+    // adjust the cars velocity
     cruise_control(time_step);
 
     // simulate all cars
@@ -297,7 +296,7 @@ void Intersection::update_fields() {
 
 // Sets the needed acceleration to reach the intersection at the designated time
 // needs to be called every simulation step.
-// outputs error if a constraint can't be met. --> what happens if there is a error?
+
 void Intersection::cruise_control(double time_step){
     int car_counter = 0;
     int time_difference = 0;
@@ -308,6 +307,7 @@ void Intersection::cruise_control(double time_step){
     for(Car &car : cars){
         if(car.current_distance > 0) {
             v_need = car.current_distance / remaining_times[car_counter];
+            // adjust the acceleration according to the current situation
             if (v_need == car.current_velocity){
                 car.current_acceleration = 0;
             }
