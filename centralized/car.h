@@ -9,6 +9,7 @@ public:
 
 	char lane;
 	char goal;
+	// distance left until the intersection center
 	double current_distance;
 	double current_field_time;
 	double current_velocity;
