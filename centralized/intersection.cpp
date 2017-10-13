@@ -48,6 +48,8 @@ double Intersection::sim_step(double time_step) {
     }
     fcfs_remaining_time -= time_step;
 
+    
+
     // replan for current situation
     if(replan && fcfs) {
         for(Car &car : cars) {
@@ -93,6 +95,7 @@ double Intersection::sim_step(double time_step) {
         for(int i=0; i<4; ++i)
             previous_min_time[i] = 0;
 
+         
 
         for(Car &car : cars) {
             // add cars which have not hit the intersection yet as solving variables to the intersection
@@ -129,6 +132,7 @@ double Intersection::sim_step(double time_step) {
                 // time to hit intersection the earliest to keep everything in order 
                 if(t_min < previous_min_time[*bin_sequence.begin()])
                     t_min = previous_min_time[*bin_sequence.begin()]+2;
+  
 
                 std::cerr << car.current_velocity << " " << car.current_distance << " " << t_max << " " << t_min << std::endl;
                 solver.add_range_bin_sequence(t_min ,t_max, bin_sequence, length_sequence);
@@ -184,6 +188,7 @@ double Intersection::sim_step(double time_step) {
 
         remaining_times = times;
     }
+
 
     cruise_control(time_step);
 
@@ -388,7 +393,7 @@ std::vector<int> Intersection::get_bin_sequence_for_car(const Car &car) {
     else if(car.lane == 'S' && car.goal == 'E') {
         bin_sequence.push_back(3);
     }
-    else if(car.lane == 'E' && car.goal == 'E') {
+    else if(car.lane == 'E' && car.goal == 'S') {
         bin_sequence.push_back(1);
         bin_sequence.push_back(0);
         bin_sequence.push_back(2);
