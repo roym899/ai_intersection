@@ -31,11 +31,11 @@ object Main extends App {
   // Be careful about two main things: Critical case (like too few places for too much cars) are not handled
   // Moreover, too much cars or too much timeMax can quickly become slow, SAT is not polynomial.
   // (we were at max with timeMax = 12 and num = 15)
-  val timeMax = 11
+  val timeMax = 10
   val length = 7
-  val num = 17
+  val num = 10
   
-  val beg = System.currentTimeMillis()
+  //val beg = System.currentTimeMillis()
 
   val cars = Spawner.spawn(length, num)
   
@@ -223,8 +223,8 @@ object Main extends App {
   val firstCells = bestSolution.groupBy{ case (c, s) => c }.map {case (c, l) => l.minBy{case (car, slot) => slot.step}}
   println(length)
   firstCells.map { case (c, s) => println(c.lane + " " +  c.choice + " " +  c.dist + " " + s.step) }
-  val end = System.currentTimeMillis()
-  println( (end - beg))
+ // val end = System.currentTimeMillis()
+  //println( (end - beg))
 }
 
 
