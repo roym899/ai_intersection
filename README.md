@@ -15,7 +15,7 @@ It uses Processing.
 In this directory, the SAT solver can be found.
 
 ## Spawner
-In this directory, the spawner for the continuous time case (aka the CSP solver) in this following format:
+In this directory, the spawner for the continuous time case (aka the CSP solver) takes a text file in the following format:
 > initial_velocity max_velocity max_acceleration lane_length time_step timestamp_1 lane_1_1 goal_1_1 lane_1_2 goal_1_2 timestamp_2 lane_2_1 ...
 
 lane_i_j is a letter N, S, E, W
